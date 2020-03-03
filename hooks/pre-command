@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "~~~ :s3: Syncing $BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD"
+aws s3 sync "$BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD" .

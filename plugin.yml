@@ -1,0 +1,11 @@
+name: AWS S3
+description: A Buildkite plugin which can download and upload files from and to S3
+author: https://github.com/viviedu
+requirements:
+  - aws
+configuration:
+  properties:
+    download:
+      type: string
+  required:
+    - download
