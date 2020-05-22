@@ -1,5 +1,33 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "~~~ :s3: Syncing $BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD"
-aws s3 sync "$BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD" .
+download() {
+  echo "~~~ :s3: Downloading $1"
+  aws s3 cp "$1" .
+}
+
+sync() {
+  echo "~~~ :s3: Syncing $1"
+  aws s3 sync "$1" .
+}
+
+if [[ -n "${BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD:-}" ]]; then
+  download "${BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD}"
+fi
+
+# https://github.com/buildkite-plugins/artifacts-buildkite-plugin/blob/01796ec3641d1f4e04c9e5cefa43570b2cadc656/hooks/pre-command#L35
+while IFS='=' read -r path _ ; do
+  if [[ $path =~ ^(BUILDKITE_PLUGIN_AWS_S3_DOWNLOAD_[0-9]+) ]]; then
+    download "${!path}"
+  fi
+done < <(env | sort)
+
+if [[ -n "${BUILDKITE_PLUGIN_AWS_S3_SYNC:-}" ]]; then
+  sync "${BUILDKITE_PLUGIN_AWS_S3_SYNC}"
+fi
+
+while IFS='=' read -r path _ ; do
+  if [[ $path =~ ^(BUILDKITE_PLUGIN_AWS_S3_SYNC_[0-9]+) ]]; then
+    sync "${!path}"
+  fi
+done < <(env | sort)

@@ -3,9 +3,24 @@ description: A Buildkite plugin which can download and upload files from and to 
 author: https://github.com/viviedu
 requirements:
   - aws
+  - bash
 configuration:
   properties:
     download:
-      type: string
-  required:
-    - download
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+    sync:
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+  oneOf:
+    - required:
+      - download
+    - required:
+      - sync
+  additionalProperties: false
